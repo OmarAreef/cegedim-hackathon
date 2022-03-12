@@ -13,7 +13,7 @@ from .model import trainModel, predictModel
 from sqlalchemy import create_engine
 from joblib import dump, load
 
-
+model = load('../model.joblib')
 
 
 @api_view(['POST'])
@@ -64,19 +64,17 @@ def train (param):
     
 # Create an engine instance
 
-    # conn_string = 'postgresql://postgres:password@localhost:5432/cegedim'
-  
-    # db = create_engine(conn_string)
-
-    # conn = db.connect()
-    # df2=pd.read_sql("SELECT * FROM public.logic_result_store ", conn)
-    # Read data from PostgreSQL database table and load into a DataFrame instance
+    conn_string = 'postgresql://postgres:password@localhost:5432/cegedim'
+    db = create_engine(conn_string)
+    conn = db.connect()
 
     
 
-    
+
     records = result_store.objects.filter(corona_result__isnull= False).values();
     result_list = querySet_to_list(records)
+    if(result_list == []):
+        return Response("model will not update",  status=status.HTTP_400_BAD_REQUEST)
     df2 = pd.DataFrame(result_list);
     
     df2 = df2[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above','corona_result']]
@@ -89,27 +87,28 @@ def train (param):
     df3['corona_result']=df2['corona_result']
     
     df3.to_sql("train_data", db, if_exists='append', index=False, chunksize=10000)
-    print("gazara1")
+
     df= pd.read_sql("SELECT * FROM train_data ", conn)
-  
+
     pd.set_option('display.expand_frame_repr', False)
 
-    db.execute("DELETE FROM public.logic_result_store")
-    print("gazara")
+    # db.execute("DELETE FROM public.logic_result_store where corona_result is null")
+    
     model=trainModel(df)
+
+
     # df = pd.read_csv('ML/data.csv')
-    res=predictModel([0,0,0,0,0],model)
-    print(res)
+    
     # trainModel(df)
-    #dump(model, 'model.joblib') 
-    return Response(res)
+    dump(model, '../model.joblib') 
+    return Response("model trained successfully",  status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
-#@parser_classes([JSONParser])
-def predict (param):
-    
+@parser_classes([JSONParser])
+def predict (param):  
 # Create an engine instance
-
     
+    print(predictModel([1,0,1,0,1],model))
+
     return Response("2")
