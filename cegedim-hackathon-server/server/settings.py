@@ -81,7 +81,7 @@ DATABASES = {
         'NAME': 'cegedim',
         'USER' :'postgres',
         'PASSWORD' :'password',
-        'HOST': 'localhost, '
+        'HOST': 'localhost', 
     }
 }
 
