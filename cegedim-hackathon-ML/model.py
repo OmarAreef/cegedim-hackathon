@@ -11,7 +11,7 @@ from sklearn.metrics import mean_squared_error, accuracy_score, balanced_accurac
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
-data = pd.read_csv('data.csv')
+# data = pd.read_csv('data.csv')
 def trainModel(df):
   
   model = SVC(kernel='poly', degree=5, probability=True)
@@ -46,9 +46,10 @@ def trainModel(df):
   print(test_acc); 
   print(classification_report(y_test, y_pred))
   return model
+  
 def predictModel(X_test, model): 
   arr=np.array(X_test)
   newarr = arr.reshape(1, -1)
   return model.predict_proba(newarr)[0][1]
-regressionModel=trainModel(data)
-print(predictModel([1,1,1,1,1],regressionModel))
+# regressionModel=trainModel(data)
+# print(predictModel([1,1,1,1,1],regressionModel))
