@@ -9,13 +9,13 @@ db = create_engine(conn_string)
 conn = db.connect()
 
 df = pd.read_csv('data.csv')
-df.drop_duplicates(inplace=True)
+# df.drop_duplicates(inplace=True)
 df.dropna()
 df = df[df['age_60_and_above'].notna()]
 df = df[df['corona_result'].notna()]
 
-
-# X = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above']]
+df = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above']]
+# df = df.reset_index()
 
 df.to_sql('train_data', con=conn, if_exists='replace',
           index=False)
