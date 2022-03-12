@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 
 # Create your models here.
-class resultStore(models.Model):
+class result_store(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     fever = models.BooleanField(default=False)
     sore_throat = models.BooleanField(default=False)
