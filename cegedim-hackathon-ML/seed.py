@@ -14,11 +14,10 @@ df.dropna()
 df = df[df['age_60_and_above'].notna()]
 df = df[df['corona_result'].notna()]
 
-a_list = list(range(1, len(df)))
+df = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above']]
+# df = df.reset_index()
 
-X = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above','corona_result']]
-
-X.to_sql('train_data', con=conn, if_exists='replace',
+df.to_sql('train_data', con=conn, if_exists='replace',
           index=False)
         
 conn = psycopg2.connect(conn_string

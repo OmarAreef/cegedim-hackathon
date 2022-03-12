@@ -9,5 +9,6 @@ class resultSerializer(serializers.ModelSerializer):
             "sore_throat",
             "shortness_of_breath",
             "head_ache",
-            "age_60_and_above"
+            "age_60_and_above",
+            "corona_result"
         ]
