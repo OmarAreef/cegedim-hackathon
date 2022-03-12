@@ -5,7 +5,9 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 from .models import result_store
 from .serializers import resultSerializer
-from .ML.model import trainModel, predictModel
+# from .ML.model import trainModel, predictModel
+# from .ML import *
+# import pandas as pd
 
 
 
@@ -18,5 +20,8 @@ def results (request):
     serializer = resultSerializer(data = data)
     serializer.is_valid(raise_exception = True)
     record = serializer.save()
+    # df = pd.read_csv('ML/data.csv')
+
+    # trainModel(df)
     print(record.id)
     return Response("hi")
