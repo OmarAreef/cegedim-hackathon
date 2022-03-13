@@ -10,5 +10,9 @@ class resultSerializer(serializers.ModelSerializer):
             "shortness_of_breath",
             "head_ache",
             "age_60_and_above",
-            "corona_result"
+            "corona_result",
+            "gender", 
+            "testReason_Abroad", 
+            "testReason_Other", 
+            "testReason_Contact_with_confirmed"
         ]

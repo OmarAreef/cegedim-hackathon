@@ -13,8 +13,12 @@ df = pd.read_csv('data.csv')
 df.dropna()
 df = df[df['age_60_and_above'].notna()]
 df = df[df['corona_result'].notna()]
+df = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above', 'gender','test_indication','corona_result']]
 
-df = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above']]
+
+df=pd.get_dummies(df, prefix=['testReason'])
+#X = X[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above','gender','testReason_Abroad','testReason_Other','testReason_Contact with confirmed']]
+
 # df = df.reset_index()
 
 df.to_sql('train_data', con=conn, if_exists='replace',
