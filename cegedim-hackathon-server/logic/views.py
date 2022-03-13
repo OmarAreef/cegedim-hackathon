@@ -13,7 +13,7 @@ from .model import trainModel, predictModel
 from sqlalchemy import create_engine
 from joblib import dump, load
 
-model = load('../model.joblib')
+#model = load('model.joblib')
 
 
 @api_view(['POST'])
@@ -24,8 +24,19 @@ def results(request):
     serializer.is_valid(raise_exception = True)
     record = serializer.save()
     print(record.id)
+    param=data
+    print (param)
+    query=[param["fever"],param["sore_throat"],param["shortness_of_breath"],param["head_ache"],param["age_60_and_above"],param["gender"],param["testReason_Abroad"],
+    param["testReason_Other"],param["testReason_Contact_with_confirmed"]]
+   
+    res=2
+    model = load('model.joblib')
+    res=predictModel(query,model)
+    print(res)
+
     return Response({
-        "id": record.id})
+        "id": record.id,
+        "prediction": res})
 
 @api_view(['POST'])
 @parser_classes([JSONParser])
@@ -38,6 +49,7 @@ def test(request):
     
     record.corona_result = data['result']
     record.save()
+    
     return Response(resultSerializer(record).data)
 
 def querySet_to_list(qs):
@@ -50,12 +62,24 @@ def querySet_to_list(qs):
 @api_view(['GET'])
 @parser_classes([JSONParser])
 def retrain(request):
-    records = result_store.objects.filter(corona_result__isnull= False).values();
-    result_list = querySet_to_list(records)
-    data = pd.DataFrame(result_list);
-    data
-    return Response(resultSerializer(records , many = True).data)
-    return Response("hi")
+    
+    conn_string = 'postgresql://postgres:password@localhost:5432/cegedim'
+    db = create_engine(conn_string)
+    conn = db.connect()
+
+    
+
+
+
+    
+    
+
+    df= pd.read_sql("SELECT * FROM train_data ", conn)
+
+    model=trainModel(df)
+    dump(model, 'model.joblib')
+    #return Response(resultSerializer(records , many = True).data)
+    return Response("Retrained successfully")
 
 
 @api_view(['POST'])
@@ -77,13 +101,18 @@ def train (param):
         return Response("model will not update",  status=status.HTTP_400_BAD_REQUEST)
     df2 = pd.DataFrame(result_list);
     
-    df2 = df2[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above','corona_result']]
+    df2 = df2[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above','gender','testReason_Abroad','testReason_Other','testReason_Contact_with_confirmed','corona_result']]
+
     df3= pd.DataFrame()
     df3['fever']=df2['fever'].astype(int)
     df3['sore_throat']=df2['sore_throat'].astype(int)
     df3['shortness_of_breath']=df2['shortness_of_breath'].astype(int)
     df3['head_ache']=df2['head_ache'].astype(int)
     df3['age_60_and_above']=df2['age_60_and_above'].astype(int)
+    df3['gender']=df2['gender'].astype(int)
+    df3['testReason_Abroad']=df2['testReason_Abroad'].astype(int)
+    df3['testReason_Other']=df2['testReason_Other'].astype(int)
+    df3['testReason_Contact_with_confirmed']=df2['testReason_Contact_with_confirmed'].astype(int)
     df3['corona_result']=df2['corona_result']
     
     df3.to_sql("train_data", db, if_exists='append', index=False, chunksize=10000)
@@ -92,7 +121,7 @@ def train (param):
 
     pd.set_option('display.expand_frame_repr', False)
 
-    # db.execute("DELETE FROM public.logic_result_store where corona_result is null")
+    db.execute("DELETE FROM public.logic_result_store where corona_result is not null")
     
     model=trainModel(df)
 
@@ -100,15 +129,22 @@ def train (param):
     # df = pd.read_csv('ML/data.csv')
     
     # trainModel(df)
-    dump(model, '../model.joblib') 
+    dump(model, 'model.joblib') 
     return Response("model trained successfully",  status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 @parser_classes([JSONParser])
-def predict (param):  
+def predict (req):  
 # Create an engine instance
-    
-    print(predictModel([1,0,1,0,1],model))
+    param=req.data
+    print (param)
+    query=[param["fever"],param["sore_throat"],param["shortness_of_breath"],param["head_ache"],param["age_60_and_above"],param["gender"],param["testReason_Abroad"],
+    param["testReason_Other"],param["testReason_Contact_with_confirmed"]]
+   
+    res=2
+    model = load('model.joblib')
+    res=predictModel(query,model)
+    print(res)
 
-    return Response("2")
+    return Response(res)
