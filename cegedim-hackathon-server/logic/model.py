@@ -21,22 +21,27 @@ def trainModel(df):
   df = df[df['age_60_and_above'].notna()]
   df = df[df['corona_result'].notna()]
 
-  X = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above']]
+  # X = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above','gender','test_indication']]
 
   
-  print("startttt")
+  # X=pd.get_dummies(X, prefix=['testReason'])
+  X = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above','gender','testReason_Abroad','testReason_Other','testReason_Contact_with_confirmed']]
+
+  
   y = df.corona_result
   
 
 
 
   X_train, X_test, y_train, y_test = train_test_split(
-  X, y, test_size=0.3,stratify=y)
+  X, y, test_size=0.2,stratify=y)
 
 
   model.fit(X_train, y_train)
       
-     
+  y_pred = model.predict(X_test.values)
+
+  print(classification_report(y_test, y_pred))
 
       
 

@@ -10,3 +10,10 @@ class result_store(models.Model):
     head_ache = models.BooleanField(default=False)
     age_60_and_above = models.BooleanField(default=False)
     corona_result = models.BooleanField(null=True)
+    gender = models.IntegerField(default=0)
+    testReason_Abroad = models.BooleanField(default=False)
+    testReason_Other = models.BooleanField(default=False)
+    testReason_Contact_with_confirmed = models.BooleanField(default=False)
+
+
+    
