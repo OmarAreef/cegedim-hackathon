@@ -14,7 +14,7 @@ df.dropna()
 df = df[df['age_60_and_above'].notna()]
 df = df[df['corona_result'].notna()]
 
-df = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above']]
+df = df[['fever', 'sore_throat','shortness_of_breath','head_ache','age_60_and_above', 'corona_result']]
 # df = df.reset_index()
 
 df.to_sql('train_data', con=conn, if_exists='replace',
