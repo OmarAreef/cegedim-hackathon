@@ -11,9 +11,9 @@ import pandas as pd
 
 from .model import trainModel, predictModel
 from sqlalchemy import create_engine
-from joblib import dump, load
+from  joblib import dump , load
 
-#model = load('model.joblib')
+# model = load('model.joblib')
 
 
 @api_view(['POST'])
@@ -23,7 +23,6 @@ def results(request):
     serializer = resultSerializer(data = data)
     serializer.is_valid(raise_exception = True)
     record = serializer.save()
-    print(record.id)
     param=data
     print (param)
     query=[param["fever"],param["sore_throat"],param["shortness_of_breath"],param["head_ache"],param["age_60_and_above"],param["gender"],param["testReason_Abroad"],
@@ -58,33 +57,9 @@ def querySet_to_list(qs):
     """
     return [dict(q) for q in qs]
 
-
-@api_view(['GET'])
-@parser_classes([JSONParser])
-def retrain(request):
-    
-    conn_string = 'postgresql://postgres:password@localhost:5432/cegedim'
-    db = create_engine(conn_string)
-    conn = db.connect()
-
-    
-
-
-
-    
-    
-
-    df= pd.read_sql("SELECT * FROM train_data ", conn)
-
-    model=trainModel(df)
-    dump(model, 'model.joblib')
-    #return Response(resultSerializer(records , many = True).data)
-    return Response("Retrained successfully")
-
-
 @api_view(['POST'])
 #@parser_classes([JSONParser])
-def train (param):
+def train (request):
     
 # Create an engine instance
 
@@ -130,6 +105,7 @@ def train (param):
     
     # trainModel(df)
     dump(model, 'model.joblib') 
+    # model = load('model.joblib')
     return Response("model trained successfully",  status=status.HTTP_200_OK)
 
 
